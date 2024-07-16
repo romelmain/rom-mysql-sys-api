@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getProductsFlow" doc:id="9025f89b-6ed9-45e7-bb9a-2a3b9d52851c" >
+		<logger level="INFO" doc:name="Start getProductsFlow" doc:id="405c0a56-64e4-4a85-b8d1-5c4ad60a8c45" message="Start getProductsFlow"/>
+		<db:select doc:name="Select" doc:id="6e19ec3c-98f9-4de3-8537-e7c067debf6a" config-ref="Mysql_Database_Config">
+			<db:sql ><![CDATA[SELECT a.id, a.nombre_producto, a.id_categoria, a.precio, b.nombre_categoria FROM productos a
+inner join categoria b on a.id_categoria = b.id]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="72314251-202d-4215-af66-902ae1696a79" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End getProductsFlow" doc:id="d2f324c4-fe0f-4c16-844e-98d066588b87" message="End getProductsFlow" />
+	</flow>
+</mule>
