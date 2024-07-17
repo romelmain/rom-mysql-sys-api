@@ -27,8 +27,8 @@ types:
     uriParameters:
      id:
        description: A specific Product by ID
-       type: string
-       example: "1234"
+       type: integer
+       example: 1
     get:
       description: "Get Product by ID"
       displayName: "Get Product by ID"
@@ -48,7 +48,7 @@ types:
     body:
       application/json:
         type: Product
-        example: !include examples/product-by-id.json
+        example: !include examples/newProduct.json
     responses:
       201:
         headers:

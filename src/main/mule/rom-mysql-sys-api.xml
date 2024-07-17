@@ -94,7 +94,7 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\products:rom-mysql-sys-api-config">
-		<flow-ref doc:name="getProductsFlow" doc:id="ff483934-ef3d-4872-9782-b8eaebea6341" name="getProductsFlow"/>
+		<flow-ref doc:name="getProductsFlow" doc:id="d7cc43de-5091-49a9-800f-23a920be0d18" name="getProductsFlow"/>
     </flow>
     <flow name="get:\products\(id):rom-mysql-sys-api-config">
         <ee:transform doc:name="Transform Message">
@@ -102,34 +102,9 @@ output application/json
                 <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  id: 1,
-  category: {
-    id: 1,
-    categoryName: "smart phone"
-  },
-  productName: "Xiaomi Redmi Note 8",
-  price: 200
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="getProductByIdFlow" doc:id="98c2633e-f84b-4e17-b721-c0941fb5b85a" name="getProductByIdFlow"/>
     </flow>
     <flow name="post:\products:application\json:rom-mysql-sys-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  code: 201,
-  message: "Producto creado exitosamente"
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="createNewProductFlow" doc:id="a433f077-1486-4ee4-89b7-0c60e90b28b4" name="createNewProductFlow"/>
     </flow>
 </mule>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="createNewProductFlow" doc:id="ac10e835-958c-4979-abcd-903f4785ab3e" >
+		<logger level="INFO" doc:name="Start createNewProductFlow" doc:id="4f120820-9d8a-4345-a7c2-11201c05d669" message="Start createNewProductFlow"/>
+		<until-successful maxRetries="${until.successful.maxretries}" doc:name="Until Successful" doc:id="73920713-8f32-4d5d-9ff9-dae3eeb4bd3c" millisBetweenRetries="${until.successful.timebetween}">
+			<try doc:name="Try" doc:id="1907f050-3088-44dc-8d1a-fd7c4ceb6e06" >
+				<db:insert doc:name="Insert" doc:id="f20c8ce7-d154-4a99-a90b-6047346afaf9" config-ref="Mysql_Database_Config" autoGenerateKeys="true">
+			<db:sql><![CDATA[INSERT INTO productos(nombre_producto, id_categoria, precio, habilitado)
+VALUES (:productName, :category, :price, 't')]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+    productName: payload.productName,
+    category: payload.category.id,
+    price: payload.price
+}]]]></db:input-parameters>
+		</db:insert>
+				<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="49ce3483-da37-4e2e-965f-87b5ef2262a1" >
+						<ee:transform doc:name="Set Error" doc:id="8464f66b-a690-4eaa-abef-a4b75384355c" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</on-error-propagate>
+				</error-handler>
+			</try>
+		</until-successful>
+		<choice doc:name="Choice" doc:id="eee73b43-878b-4bb5-97a3-8bd14f2aefef" >
+			<when expression="#[payload.affectedRows == 1]">
+				<ee:transform doc:name="Set Final Response" doc:id="05ce593f-74cc-43b9-815e-23730922cf4c">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message": "Producto creado exitosamente",
+	"ID": payload.generatedKeys.GENERATED_KEY
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Set Error" doc:id="c7393825-0f40-4180-ab22-a3019b23d3a6" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="End createNewProductFlow" doc:id="af858ec8-57a0-4984-8fff-ec6dc03fad53" message="End createNewProductFlow" />
+	</flow>
+</mule>

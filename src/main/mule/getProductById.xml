@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getProductByIdFlow" doc:id="8b8f8198-1e34-4925-96bc-4a80287a79ff" >
+		<logger level="INFO" doc:name="Start getProductByIdFlow" doc:id="a9ffcc31-a93e-482e-9510-0d75f2149119" message="Start getProductByIdFlow"/>
+		<ee:transform doc:name="Set Query" doc:id="5e8f89e5-3a71-4893-b445-05a248c5cbbc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA["SELECT a.id, a.nombre_producto, a.id_categoria, a.precio, b.nombre_categoria FROM productos a
+inner join categoria b on a.id_categoria = b.id where a.id = '" ++ vars.id ++ "'"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<until-successful maxRetries="${until.successful.maxretries}" doc:name="Until Successful" doc:id="f21da3fc-845b-42fe-b0c6-2cce03ead354" millisBetweenRetries="${until.successful.timebetween}">
+			<try doc:name="Try" doc:id="26f87c44-f809-4b9a-afdf-03e17e1f6451" >
+				<db:select doc:name="Product By Id" doc:id="dba74506-bf92-457d-8473-1c7b37c53c04" config-ref="Mysql_Database_Config">
+			<db:sql><![CDATA[#[payload]]]></db:sql>
+		</db:select>
+				<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6913a882-5a5c-4998-a443-dd9236c50433" >
+						<ee:transform doc:name="Set Error" doc:id="25ae93a2-3df6-4244-b26d-fb05e529a226" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</on-error-propagate>
+				</error-handler>
+			</try>
+		</until-successful>
+		<ee:transform doc:name="Set Final Response" doc:id="503edc74-07ce-4b41-a265-190f6520f518" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End getProductByIdFlow" doc:id="046a0172-bfa9-4d8e-bb63-ec38bb7b111a" message="End getProductByIdFlow" />
+	</flow>
+</mule>
