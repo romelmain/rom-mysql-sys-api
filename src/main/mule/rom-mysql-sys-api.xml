@@ -97,7 +97,7 @@ output application/json
 		<flow-ref doc:name="getProductsFlow" doc:id="8d4da3a7-6db7-43a7-b08c-83deb2ceb566" name="getProductsFlow"/>
     </flow>
     <flow name="get:\products\(id):rom-mysql-sys-api-config">
-        <ee:transform doc:name="Transform Message">
+        <ee:transform doc:name="Set ID">
             <ee:variables>
                 <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
             </ee:variables>
