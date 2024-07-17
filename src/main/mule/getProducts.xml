@@ -7,17 +7,45 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="getProductsFlow" doc:id="9025f89b-6ed9-45e7-bb9a-2a3b9d52851c" >
 		<logger level="INFO" doc:name="Start getProductsFlow" doc:id="405c0a56-64e4-4a85-b8d1-5c4ad60a8c45" message="Start getProductsFlow"/>
+		<ee:transform doc:name="Set Name" doc:id="646ad691-dc4a-4955-b899-17868546fa6a" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="productName" ><![CDATA[attributes.queryParams.'name']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="4b7dc507-86df-4589-88a1-dacb6d2d238e" >
+			<when expression="#[vars.productName != null]">
+				<ee:transform doc:name="Query Product by Name" doc:id="321d4cef-fd31-4ef0-bbc7-909717e26573" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="query" ><![CDATA["SELECT a.id, a.nombre_producto, a.id_categoria, a.precio, b.nombre_categoria FROM productos a
+inner join categoria b on a.id_categoria = b.id where a.nombre_producto = '" ++ vars.productName ++ "'"]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Quety all Products" doc:id="5dddb22d-ffe2-48fe-b413-475572d86924" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="query" ><![CDATA["SELECT a.id, a.nombre_producto, a.id_categoria, a.precio, b.nombre_categoria FROM productos a
+inner join categoria b on a.id_categoria = b.id"]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</otherwise>
+		</choice>
 		<until-successful maxRetries="${until.successful.maxretries}" doc:name="Until Successful" doc:id="abb9f9fb-eabc-481c-8a8a-28cd5c5c942a" millisBetweenRetries="${until.successful.timebetween}">
-			<try doc:name="Try" doc:id="cd03cade-a2ce-4326-a21d-86fe8a103b87" >
-				<db:select doc:name="All Products" doc:id="6e19ec3c-98f9-4de3-8537-e7c067debf6a" config-ref="Mysql_Database_Config">
-			<db:sql><![CDATA[SELECT a.id, a.nombre_producto, a.id_categoria, a.precio, b.nombre_categoria FROM productos a
-inner join categoria b on a.id_categoria = b.id]]></db:sql>
+			<try doc:name="Try" doc:id="cd03cade-a2ce-4326-a21d-86fe8a103b87">
+				<db:select doc:name="Products" doc:id="6e19ec3c-98f9-4de3-8537-e7c067debf6a" config-ref="Mysql_Database_Config">
+			<db:sql><![CDATA[#[vars.query]]]></db:sql>
 		</db:select>
-				<error-handler >
-					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="33da7d1d-afce-4964-b3de-d2fea41f9cc9" >
-						<ee:transform doc:name="Set Error" doc:id="c2a6a2fb-5568-4160-ab78-702401d031be" >
-							<ee:message >
-								<ee:set-payload ><![CDATA[%dw 2.0
+				<error-handler>
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="33da7d1d-afce-4964-b3de-d2fea41f9cc9">
+						<ee:transform doc:name="Set Error" doc:id="c2a6a2fb-5568-4160-ab78-702401d031be">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 payload]]></ee:set-payload>

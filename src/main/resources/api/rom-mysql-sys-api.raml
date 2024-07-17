@@ -10,8 +10,15 @@ types:
 
 /products:
   get:
-    description: "Get all Products"
+    description: "Get all Products or Product by name"
     displayName: "Get Products"
+    queryParameters:
+      name:
+        displayName: Product Name
+        type: string
+        description: Product name
+        required: false
+        example: "Xiaomi"
     responses:
       200:
         headers:
@@ -42,6 +49,7 @@ types:
               type: Product
               example: !include examples/product-by-id.json
 
+    
   post:
     description: "Create a new Product"
     displayName: "Create Product"

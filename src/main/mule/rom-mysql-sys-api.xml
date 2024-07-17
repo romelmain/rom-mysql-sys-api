@@ -94,7 +94,7 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\products:rom-mysql-sys-api-config">
-		<flow-ref doc:name="getProductsFlow" doc:id="d7cc43de-5091-49a9-800f-23a920be0d18" name="getProductsFlow"/>
+		<flow-ref doc:name="getProductsFlow" doc:id="8d4da3a7-6db7-43a7-b08c-83deb2ceb566" name="getProductsFlow"/>
     </flow>
     <flow name="get:\products\(id):rom-mysql-sys-api-config">
         <ee:transform doc:name="Transform Message">
@@ -102,9 +102,9 @@ output application/json
                 <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-		<flow-ref doc:name="getProductByIdFlow" doc:id="98c2633e-f84b-4e17-b721-c0941fb5b85a" name="getProductByIdFlow"/>
+		<flow-ref doc:name="getProductByIdFlow" doc:id="af976970-86e6-4274-9351-da7e1f30b3dc" name="getProductByIdFlow"/>
     </flow>
     <flow name="post:\products:application\json:rom-mysql-sys-api-config">
-		<flow-ref doc:name="createNewProductFlow" doc:id="a433f077-1486-4ee4-89b7-0c60e90b28b4" name="createNewProductFlow"/>
+		<flow-ref doc:name="createNewProductFlow" doc:id="e2307ada-c3b4-4bed-bb43-b2673c89f009" name="createNewProductFlow"/>
     </flow>
 </mule>
